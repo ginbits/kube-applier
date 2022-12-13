@@ -8,8 +8,10 @@ LABEL maintainer="Greg Lyons<glyons@box.com>"
 WORKDIR /root/
 ADD templates/* /templates/
 ADD static/ /static/
-RUN apt-get update && \
-    apt-get install -y git
-ADD https://storage.googleapis.com/kubernetes-release/release/v1.9.4/bin/linux/amd64/kubectl /usr/local/bin/kubectl
-RUN chmod +x /usr/local/bin/kubectl
+RUN apt-get update
+RUN apt-get install -y git curl
+RUN git config --global --add safe.directory '*'
+RUN curl -LO https://dl.k8s.io/release/v1.23.14/bin/linux/amd64/kubectl
+RUN chmod +x kubectl
+RUN cp kubectl /usr/local/bin/kubectl
 COPY --from=builder /go/src/github.com/box/kube-applier/kube-applier /kube-applier
