@@ -18,6 +18,6 @@ RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/s
     chmod +x kubectl && \
     mv kubectl /usr/local/bin/kubectl
 
-RUN chmod +x kubectl
-RUN cp kubectl /usr/local/bin/kubectl
 COPY --from=builder /go/src/github.com/box/kube-applier/kube-applier /kube-applier
+
+ENTRYPOINT ["/kube-applier"]
