@@ -2,6 +2,7 @@
 name: kube-applier:kube-applier publish
 
 on:
+  workflow_dispatch:
   push:
     branches: [master]
     tags: ["v*.*.*"]
