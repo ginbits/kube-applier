@@ -92,16 +92,22 @@ func (c *Client) CheckVersion() error {
 	}
 
 	// Using regular expressions, parse for the Major and Minor version numbers for both client and server.
-	clientPattern := regexp.MustCompile("(?:Client Version: version.Info{Major:\"([0-9+]+)\", Minor:\"([0-9+]+)\")")
-	serverPattern := regexp.MustCompile("(?:Server Version: version.Info{Major:\"([0-9+]+)\", Minor:\"([0-9+]+)\")")
+	clientPattern := regexp.MustCompile(`Client Version: v([0-9]+)\.([0-9]+)`)
+	serverPattern := regexp.MustCompile(`Server Version: v([0-9]+)\.([0-9]+)`)
 
-	clientInfo := clientPattern.FindAllStringSubmatch(output, -1)
-	clientMajor := clientInfo[0][1]
-	clientMinor := clientInfo[0][2]
+	clientInfo := clientPattern.FindStringSubmatch(output)
+	if len(clientInfo) < 3 {
+		return fmt.Errorf("Error parsing client version from kubectl output: %v", output)
+	}
+	clientMajor := clientInfo[1]
+	clientMinor := clientInfo[2]
 
-	serverInfo := serverPattern.FindAllStringSubmatch(output, -1)
-	serverMajor := serverInfo[0][1]
-	serverMinor := serverInfo[0][2]
+	serverInfo := serverPattern.FindStringSubmatch(output)
+	if len(serverInfo) < 3 {
+		return fmt.Errorf("Error parsing server version from kubectl output: %v", output)
+	}
+	serverMajor := serverInfo[1]
+	serverMinor := serverInfo[2]
 
 	return isCompatible(clientMajor, clientMinor, serverMajor, serverMinor)
 }
